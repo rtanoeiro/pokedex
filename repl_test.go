@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCleanInput(t *testing.T) {
 	cases := []struct {
@@ -13,10 +15,10 @@ func TestCleanInput(t *testing.T) {
 		},
 		{
 			input:    "bulbasaur charmander squirtle",
-			expected: []string{"bulbasair", "charmander", "squirtle"},
+			expected: []string{"bulbasaur", "charmander", "squirtle"},
 		},
 		{
-			input:    "my last test",
+			input:    "My last TEST",
 			expected: []string{"my", "last", "test"},
 		},
 	}
@@ -24,7 +26,7 @@ func TestCleanInput(t *testing.T) {
 	for _, c := range cases {
 		actual := cleanInput(c.input)
 		if len(actual) != len(c.expected) {
-			t.Errorf("Different lenght in sizes %v != %v", actual, c.expected)
+			t.Errorf("Different lenght in sizes %v != %v", len(actual), len(c.expected))
 		}
 		for i := range actual {
 			word := actual[i]

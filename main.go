@@ -1,11 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	split:=cleanInput("  hello  world  ")
+	fmt.Println("Size of split word: ", len(split))
 }
 
 func cleanInput(text string) []string {
-	return []string{}
+	
+	lowerWord := strings.ToLower(text)
+	splitText := strings.Fields(lowerWord)
+
+	return splitText
 }
