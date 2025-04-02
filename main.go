@@ -33,8 +33,6 @@ func main() {
 	fmt.Print("Pokedex > ")
 		if inputBuffer.Scan() {
 			command, err := commandMap[inputBuffer.Text()]
-			fmt.Println("Used command: ", command)
-			fmt.Println("Currenf error: ", err)
 			if !err  {
 				fmt.Println("Unknown command, please try again")
 				continue
