@@ -1,6 +1,8 @@
 package main
 
-import "pokedexcli/internal/pokecache"
+import (
+	"pokedexcli/internal/pokecache"
+)
 
 const AreasEndpointURL = "https://pokeapi.co/api/v2/location-area/"
 
@@ -11,6 +13,7 @@ type cliCommand struct {
 }
 
 type Config struct {
+	params string
 	next_url string
 	previous_url string
 }
@@ -46,5 +49,10 @@ var commandMapping = map[string]cliCommand{
 		description: "Get the previous 20 locations of the map",
 		callback: commandMapBack,
 	},
+	"explore": {
+		name: "explore",
+		description: "Explore the area to find available pokemons",
+		callback: commandExplore,
+	}
 }
 
