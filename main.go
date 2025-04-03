@@ -11,6 +11,7 @@ import (
 func main() {
 	cacheData := pokecache.NewCache(20*time.Second)
 	config:= &Config{
+		params: "",
 		next_url: "",
 		previous_url: "",
 	}
