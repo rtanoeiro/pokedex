@@ -13,8 +13,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	config		*Config
-	callback    func()
+	callback    func(confg *Config)
 }
 
 type Config struct {
@@ -25,7 +24,7 @@ type Config struct {
 type Locations struct {
 	Count    int    `json:"count"`
 	Next     string `json:"next"`
-	Previous any    `json:"previous"`
+	Previous string    `json:"previous"`
 	Results  []struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
@@ -50,12 +49,13 @@ func main() {
 		"map":{
 			name: "map",
 			description: "Get the next 20 locations of the map",
-			config: &Config{
-				next_url: "",
-				previous_url: "",
-			},
 			callback: commandMap,
 		},
+	}
+
+	config:= &Config{
+		next_url: "",
+		previous_url: "",
 	}
 
 	inputBuffer := bufio.NewScanner(os.Stdin)
@@ -67,17 +67,17 @@ func main() {
 				fmt.Println("Unknown command, please try again")
 				continue
 			}
-			command.callback()
+			command.callback(config)
 		}
 	}
 }
 
-func commandExit() {
+func commandExit(config *Config) {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 }
 
-func commandHelp() {
+func commandHelp(config *Config) {
 	fmt.Println(`Welcome to the Pokedex!
 Usage:
 
@@ -86,7 +86,7 @@ exit: Exit the Pokedex
 map: Shows the next 20 locations of the map	`)
 }
 
-func commandMap() {
+func commandMap(config *Config) {
 	
 	response, err := http.Get(AreasEndpointURL)
 
@@ -109,6 +109,9 @@ func commandMap() {
 	
 	errUM := json.Unmarshal(resData, &locations)
 	
+	config.previous_url = locations.Previous
+	config.next_url = locations.Next
+
 	for _, location := range locations.Results {
 		fmt.Println(location.Name)
 	}
