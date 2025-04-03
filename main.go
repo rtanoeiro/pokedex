@@ -13,7 +13,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	config		Config
+	config		*Config
 	callback    func()
 }
 
@@ -50,6 +50,10 @@ func main() {
 		"map":{
 			name: "map",
 			description: "Get the next 20 locations of the map",
+			config: &Config{
+				next_url: "",
+				previous_url: "",
+			},
 			callback: commandMap,
 		},
 	}
@@ -102,15 +106,20 @@ func commandMap() {
 		fmt.Println("Found error when reading Body from HTTP Get Response")
 		return
 	}
-
+	
 	errUM := json.Unmarshal(resData, &locations)
-	fmt.Println(locations.Count)
+	
+	if locations.Previous == nil {
+		fmt.Println("you're in the first page")
+	}
+
+	for _, location := range locations.Results {
+		fmt.Println(location.Name)
+	}
 	if errUM != nil {
 		fmt.Println("Got error Unmarshling Data")
 		return
 	}
-
-
 }
 
 func cleanInput(text string) []string {
