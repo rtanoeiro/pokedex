@@ -2,7 +2,10 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -10,8 +13,26 @@ import (
 type cliCommand struct {
 	name        string
 	description string
+	config		Config
 	callback    func()
 }
+
+type Config struct {
+	next_url []string
+	previous_url []string
+}
+
+type Locations struct {
+	Count    int    `json:"count"`
+	Next     string `json:"next"`
+	Previous any    `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"results"`
+}
+
+const AreasEndpointURL = "https://pokeapi.co/api/v2/location-area/"
 
 
 func main() {
@@ -25,6 +46,11 @@ func main() {
 			name: "help",
 			description: "Contains usage details for the CLI",
 			callback: commandHelp,
+		},
+		"map":{
+			name: "map",
+			description: "Get the next 20 locations of the map",
+			callback: commandMap,
 		},
 	}
 
@@ -52,7 +78,39 @@ func commandHelp() {
 Usage:
 
 help: Displays a help message
-exit: Exit the Pokedex`)
+exit: Exit the Pokedex
+map: Shows the next 20 locations of the map	`)
+}
+
+func commandMap() {
+	
+	response, err := http.Get(AreasEndpointURL)
+
+	if response.StatusCode != 200 {
+		fmt.Println("Unable to get data, try again.")
+		return
+	}
+
+	if err != nil {
+		fmt.Println("Error getting data, try again.")
+		return
+	}
+	locations := Locations{}
+
+	resData, ioError := io.ReadAll(response.Body)
+	if ioError != nil {
+		fmt.Println("Found error when reading Body from HTTP Get Response")
+		return
+	}
+
+	errUM := json.Unmarshal(resData, &locations)
+	fmt.Println(locations.Count)
+	if errUM != nil {
+		fmt.Println("Got error Unmarshling Data")
+		return
+	}
+
+
 }
 
 func cleanInput(text string) []string {
