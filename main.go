@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"pokedexcli/internal/pokecache"
+	"strings"
 	"time"
 )
 
@@ -20,11 +21,20 @@ func main() {
 	for {
 	fmt.Print("Pokedex > ")
 		if inputBuffer.Scan() {
-			command, err := commandMapping[inputBuffer.Text()]
+
+			parameters := strings.Fields(inputBuffer.Text())
+			command, err := commandMapping[parameters[0]]
+			
+			if len(parameters) > 1 {
+				config.params = parameters[1]
+			}
+
 			if !err  {
 				fmt.Println("Unknown command, please try again")
 				continue
 			}
+
+			fmt.Println("Current Config: ", config)
 			command.callback(config, cacheData)
 		}
 	}
