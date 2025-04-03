@@ -51,6 +51,11 @@ func main() {
 			description: "Get the next 20 locations of the map",
 			callback: commandMap,
 		},
+		"mapb": {
+			name: "mapb",
+			description: "Get the previous 20 locations of the map",
+			callback: commandMapBack,
+		},
 	}
 
 	config:= &Config{
@@ -89,6 +94,46 @@ map: Shows the next 20 locations of the map	`)
 func commandMap(config *Config) {
 	
 	response, err := http.Get(AreasEndpointURL)
+
+	if response.StatusCode != 200 {
+		fmt.Println("Unable to get data, try again.")
+		return
+	}
+
+	if err != nil {
+		fmt.Println("Error getting data, try again.")
+		return
+	}
+	locations := Locations{}
+
+	resData, ioError := io.ReadAll(response.Body)
+	if ioError != nil {
+		fmt.Println("Found error when reading Body from HTTP Get Response")
+		return
+	}
+	
+	errUM := json.Unmarshal(resData, &locations)
+	
+	config.previous_url = locations.Previous
+	config.next_url = locations.Next
+
+	for _, location := range locations.Results {
+		fmt.Println(location.Name)
+	}
+	if errUM != nil {
+		fmt.Println("Got error Unmarshling Data")
+		return
+	}
+}
+
+func commandMapBack(config *Config) {
+	
+	if config.previous_url == "" {
+		fmt.Println("you're in the first page")
+		return
+	}
+
+	response, err := http.Get(config.previous_url)
 
 	if response.StatusCode != 200 {
 		fmt.Println("Unable to get data, try again.")
