@@ -109,10 +109,6 @@ func commandMap() {
 	
 	errUM := json.Unmarshal(resData, &locations)
 	
-	if locations.Previous == nil {
-		fmt.Println("you're in the first page")
-	}
-
 	for _, location := range locations.Results {
 		fmt.Println(location.Name)
 	}
