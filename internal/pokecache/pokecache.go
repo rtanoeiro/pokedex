@@ -1,4 +1,4 @@
-package main
+package pokecache
 
 import (
 	"sync"
@@ -15,19 +15,22 @@ type Cache struct {
 	mu *sync.RWMutex
 }
 
-func NewCache(cacheDuration time.Duration) {
+func NewCache(cacheDuration time.Duration) *Cache {
 	
-	cacheData := Cache{
+	cacheData := &Cache{
 		cached: make(map[string]cacheEntry),
 		mu: &sync.RWMutex{},
 	}
 
-	ticker := time.NewTicker(cacheDuration)
+	go func() {
+		ticker := time.NewTicker(cacheDuration)
+		
+		for range ticker.C {
+			cacheData.reapLoop()
+		}
+	}()
 
-	for range ticker.C {
-		cacheData.reapLoop()
-	}
-
+	return cacheData
 }
 
 func (c *Cache) Add(key string, val []byte) {
