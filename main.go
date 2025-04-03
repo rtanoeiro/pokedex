@@ -7,7 +7,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"pokedexcli/internal/pokecache"
 	"strings"
+	"time"
 )
 
 type cliCommand struct {
@@ -58,6 +60,7 @@ func main() {
 		},
 	}
 
+	cacheData := pokecache.NewCache(20*time.Second)
 	config:= &Config{
 		next_url: "",
 		previous_url: "",
@@ -72,17 +75,17 @@ func main() {
 				fmt.Println("Unknown command, please try again")
 				continue
 			}
-			command.callback(config)
+			command.callback(config, cacheData)
 		}
 	}
 }
 
-func commandExit(config *Config) {
+func commandExit(config *Config, cache pokecache.Cache) {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 }
 
-func commandHelp(config *Config) {
+func commandHelp(config *Config, cache pokecache.Cache) {
 	fmt.Println(`Welcome to the Pokedex!
 Usage:
 
@@ -91,7 +94,7 @@ exit: Exit the Pokedex
 map: Shows the next 20 locations of the map	`)
 }
 
-func commandMap(config *Config) {
+func commandMap(config *Config, cache pokecache.Cache) {
 	var url string
 
 	if config.next_url == "" {
@@ -133,7 +136,7 @@ func commandMap(config *Config) {
 	}
 }
 
-func commandMapBack(config *Config) {
+func commandMapBack(config *Config, cache pokecache.Cache) {
 	
 	if config.previous_url == "" {
 		fmt.Println("you're in the first page")
