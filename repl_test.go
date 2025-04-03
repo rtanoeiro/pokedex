@@ -1,7 +1,9 @@
 package main
 
 import (
+	"pokedexcli/internal/pokecache"
 	"testing"
+	"time"
 )
 
 func TestCleanInput(t *testing.T) {
@@ -34,6 +36,38 @@ func TestCleanInput(t *testing.T) {
 			if word != expectedWord {
 				t.Errorf("Different word result %v != %v", word, expectedWord)				
 			}
+		}
+	}
+}
+
+func TestCacheData(t *testing.T) {
+
+	cases := []struct {
+		key string
+		val []byte
+	}{
+		{
+			key: "example.com",
+			val: []byte("123"),
+		},
+		{
+			key: "example2.com",
+			val: []byte("more tests"),
+		},
+	}
+
+	
+	for _, c := range cases {
+		newcache := pokecache.NewCache(2*time.Second)
+		newcache.Add(c.key, c.val)
+		val, ok := newcache.Get(c.key)
+		if !ok {
+			t.Error("Expected to find key!")
+			return
+		}
+		if string(val) != string(c.val) {
+			t.Errorf("Expected value to be the same!")
+			return
 		}
 	}
 }
