@@ -106,6 +106,6 @@ var commandMapping = map[string]cliCommand{
 		name: "explore",
 		description: "Explore the area to find available pokemons",
 		callback: commandExplore,
-	}
+	},
 }
 
