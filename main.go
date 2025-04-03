@@ -18,8 +18,8 @@ type cliCommand struct {
 }
 
 type Config struct {
-	next_url []string
-	previous_url []string
+	next_url string
+	previous_url string
 }
 
 type Locations struct {
