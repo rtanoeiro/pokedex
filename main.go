@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type cliCommand struct {
@@ -163,4 +164,12 @@ func commandMapBack(config *Config) {
 		fmt.Println("Got error Unmarshling Data")
 		return
 	}
+}
+
+func cleanInput(text string) []string {
+	
+	lowerWord := strings.ToLower(text)
+	splitText := strings.Fields(lowerWord)
+
+	return splitText
 }
