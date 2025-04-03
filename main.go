@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"pokedexcli/internal/pokecache"
-	"strings"
 	"time"
 )
 
@@ -191,12 +190,4 @@ func commandMapBack(config *Config, cache *pokecache.Cache) {
 		fmt.Println("Got error Unmarshling Data")
 		return
 	}
-}
-
-func cleanInput(text string) []string {
-	
-	lowerWord := strings.ToLower(text)
-	splitText := strings.Fields(lowerWord)
-
-	return splitText
 }
