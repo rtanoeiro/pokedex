@@ -92,8 +92,15 @@ map: Shows the next 20 locations of the map	`)
 }
 
 func commandMap(config *Config) {
-	
-	response, err := http.Get(AreasEndpointURL)
+	var url string
+
+	if config.next_url == "" {
+		url = AreasEndpointURL
+	} else {
+		url = config.next_url
+	}
+
+	response, err := http.Get(url)
 
 	if response.StatusCode != 200 {
 		fmt.Println("Unable to get data, try again.")
