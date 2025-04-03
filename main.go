@@ -15,7 +15,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(confg *Config)
+	callback    func(confg *Config, cache *pokecache.Cache)
 }
 
 type Config struct {
@@ -80,12 +80,12 @@ func main() {
 	}
 }
 
-func commandExit(config *Config, cache pokecache.Cache) {
+func commandExit(config *Config, cache *pokecache.Cache) {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 }
 
-func commandHelp(config *Config, cache pokecache.Cache) {
+func commandHelp(config *Config, cache *pokecache.Cache) {
 	fmt.Println(`Welcome to the Pokedex!
 Usage:
 
@@ -94,8 +94,10 @@ exit: Exit the Pokedex
 map: Shows the next 20 locations of the map	`)
 }
 
-func commandMap(config *Config, cache pokecache.Cache) {
+func commandMap(config *Config, cache *pokecache.Cache) {
 	var url string
+	var resData []byte
+	var ioError error
 
 	if config.next_url == "" {
 		url = AreasEndpointURL
@@ -103,25 +105,32 @@ func commandMap(config *Config, cache pokecache.Cache) {
 		url = config.next_url
 	}
 
-	response, err := http.Get(url)
-
-	if response.StatusCode != 200 {
-		fmt.Println("Unable to get data, try again.")
-		return
-	}
-
-	if err != nil {
-		fmt.Println("Error getting data, try again.")
-		return
-	}
-	locations := Locations{}
-
-	resData, ioError := io.ReadAll(response.Body)
-	if ioError != nil {
-		fmt.Println("Found error when reading Body from HTTP Get Response")
-		return
-	}
+	resData, cacheError := cache.Get(url)
 	
+	/*Move this http request to a common func*/
+	if !cacheError {
+		response, httpErr := http.Get(url)
+		
+		if response.StatusCode != 200 {
+			fmt.Println("Unable to get data, try again.")
+			return
+		}
+	
+		if httpErr != nil {
+			fmt.Println("Error getting data, try again.")
+			return
+		}
+
+		resData, ioError = io.ReadAll(response.Body)
+
+		if ioError != nil {
+			fmt.Println("Found error when reading Body from HTTP Get Response")
+			return
+		}
+	
+	} 
+
+	locations := Locations{}	
 	errUM := json.Unmarshal(resData, &locations)
 	
 	config.previous_url = locations.Previous
@@ -136,32 +145,40 @@ func commandMap(config *Config, cache pokecache.Cache) {
 	}
 }
 
-func commandMapBack(config *Config, cache pokecache.Cache) {
-	
+func commandMapBack(config *Config, cache *pokecache.Cache) {
+	var ioError error
+
 	if config.previous_url == "" {
 		fmt.Println("you're in the first page")
 		return
 	}
 
-	response, err := http.Get(config.previous_url)
+	resData, cacheError := cache.Get(config.previous_url)
+	
+	if !cacheError {
+		response, httpErr := http.Get(config.previous_url)
+		
+		if response.StatusCode != 200 {
+			fmt.Println("Unable to get data, try again.")
+			return
+		}
+	
+		if httpErr != nil {
+			fmt.Println("Error getting data, try again.")
+			return
+		}
 
-	if response.StatusCode != 200 {
-		fmt.Println("Unable to get data, try again.")
-		return
-	}
+		resData, ioError = io.ReadAll(response.Body)
 
-	if err != nil {
-		fmt.Println("Error getting data, try again.")
-		return
-	}
+		if ioError != nil {
+			fmt.Println("Found error when reading Body from HTTP Get Response")
+			return
+		}
+	
+	} 
+
 	locations := Locations{}
 
-	resData, ioError := io.ReadAll(response.Body)
-	if ioError != nil {
-		fmt.Println("Found error when reading Body from HTTP Get Response")
-		return
-	}
-	
 	errUM := json.Unmarshal(resData, &locations)
 	
 	config.previous_url = locations.Previous
