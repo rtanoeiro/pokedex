@@ -16,6 +16,7 @@ func main() {
 		next_url: "",
 		previous_url: "",
 	}
+	myPokedex := &Pokedex{}
 
 	inputBuffer := bufio.NewScanner(os.Stdin)
 	for {
@@ -35,7 +36,7 @@ func main() {
 				continue
 			}
 
-			command.callback(config, cacheData)
+			command.callback(config, cacheData, myPokedex)
 		}
 	}
 }
