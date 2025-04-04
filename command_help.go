@@ -42,7 +42,7 @@ func commandHelp(config *Config, cache *pokecache.Cache) {
 
 	commands := getCommands()
 	for _, command := range commands {
-		fmt.Printf("Command %s: %s", command.name, command.description)
+		fmt.Printf("Command %s: %s\n", command.name, command.description)
 	}
 	
 }
