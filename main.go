@@ -35,7 +35,6 @@ func main() {
 				continue
 			}
 
-			fmt.Println("Current Config: ", config)
 			command.callback(config, cacheData)
 		}
 	}
