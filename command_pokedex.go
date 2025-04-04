@@ -7,7 +7,7 @@ import (
 
 func commandPokedex(config *Config, cache *pokecache.Cache, myPokedex *Pokedex) {
 
-	for pokemonName, _ := range *myPokedex {
+	for pokemonName := range *myPokedex {
 		fmt.Println("  -", pokemonName)
 	}
 	return
