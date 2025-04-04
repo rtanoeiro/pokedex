@@ -21,9 +21,10 @@ func main() {
 	for {
 	fmt.Print("Pokedex > ")
 		if inputBuffer.Scan() {
-
+			
+			commands := getCommands()
 			parameters := strings.Fields(inputBuffer.Text())
-			command, err := commandMapping[parameters[0]]
+			command, err := commands[parameters[0]]
 			
 			if len(parameters) > 1 {
 				config.params = parameters[1]

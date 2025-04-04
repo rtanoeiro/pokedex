@@ -5,11 +5,44 @@ import (
 	"pokedexcli/internal/pokecache"
 )
 
-func commandHelp(config *Config, cache *pokecache.Cache) {
-	fmt.Println(`Welcome to the Pokedex!
-Usage:
+func getCommands()  map[string]cliCommand {
 
-help: Displays a help message
-exit: Exit the Pokedex
-map: Shows the next 20 locations of the map	`)
+	commandMapping := map[string]cliCommand{
+		"exit": {
+			name: "exit",
+			description: "Exit the Pokedex",
+			callback: commandExit,
+		},
+		"help": {
+			name: "help",
+			description: "Contains usage details for the CLI",
+			callback: commandHelp,
+		},
+		"map":{
+			name: "map",
+			description: "Get the next 20 locations of the map",
+			callback: commandMap,
+		},
+		"mapb": {
+			name: "mapb",
+			description: "Get the previous 20 locations of the map",
+			callback: commandMapBack,
+		},
+		"explore": {
+			name: "explore",
+			description: "Explore the area to find available pokemons",
+			callback: commandExplore,
+		},
+	}
+
+	return commandMapping
+}
+
+func commandHelp(config *Config, cache *pokecache.Cache) {
+
+	commands := getCommands()
+	for _, command := range commands {
+		fmt.Printf("Command %s: %s", command.name, command.description)
+	}
+	
 }
