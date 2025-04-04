@@ -7,7 +7,7 @@ import (
 )
 
 
-func commandExplore(config *Config, cache *pokecache.Cache) {
+func commandExplore(config *Config, cache *pokecache.Cache, myPokedex *Pokedex) {
 	var httpErr error
 
 	url := AreasEndpointURL + config.params

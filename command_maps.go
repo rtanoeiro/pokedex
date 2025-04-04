@@ -6,7 +6,7 @@ import (
 	"pokedexcli/internal/pokecache"
 )
 
-func commandMap(config *Config, cache *pokecache.Cache) {
+func commandMap(config *Config, cache *pokecache.Cache, myPokedex *Pokedex) {
 	var url string
 	var resData []byte
 	var httpErr error
@@ -44,7 +44,7 @@ func commandMap(config *Config, cache *pokecache.Cache) {
 	}
 }
 
-func commandMapBack(config *Config, cache *pokecache.Cache) {
+func commandMapBack(config *Config, cache *pokecache.Cache, myPokedex *Pokedex) {
 	var httpErr error
 
 	if config.previous_url == "" {
